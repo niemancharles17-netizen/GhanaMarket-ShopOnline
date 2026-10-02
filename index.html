@@ -826,37 +826,60 @@
     /*
       CHECKOUT
     */
-    function checkout() {
+   function checkout() {
+  if (cart.length === 0) {
+    alert("Your cart is empty. Please add a product first.");
+    return;
+  }
 
-      if (cart.length === 0) {
+  let total = 0;
+  let orderDetails = "";
 
-        alert(
-          "Your cart is empty. Please add a product first."
-        );
+  cart.forEach(function(item) {
+    total += item.price * item.quantity;
 
-        return;
+    orderDetails +=
+      item.name +
+      " x" +
+      item.quantity +
+      " = GH₵ " +
+      (item.price * item.quantity) +
+      "\n";
+  });
 
-      }
+  const customerName = prompt("Please enter your name:");
 
+  if (!customerName) {
+    return;
+  }
 
-      let total = 0;
+  const phone = prompt("Please enter your phone number:");
 
-      cart.forEach(function(item) {
+  if (!phone) {
+    return;
+  }
 
-        total += item.price * item.quantity;
+  const location = prompt("Please enter your delivery location:");
 
-      });
+  if (!location) {
+    return;
+  }
 
+  const message =
+    "Hello GhanaMarket! I want to place an order.\n\n" +
+    "Customer: " + customerName + "\n" +
+    "Phone: " + phone + "\n" +
+    "Delivery location: " + location + "\n\n" +
+    "ORDER:\n" +
+    orderDetails +
+    "\nTotal: GH₵ " + total;
 
-      alert(
-        "Thank you for shopping with GhanaMarket!\n\n" +
-        "Your total is GH₵ " + total +
-        ".\n\n" +
-        "Checkout/payment integration can be added here."
-      );
+  const whatsappURL =
+    "https://wa.me/233599781458?text=" +
+    encodeURIComponent(message);
 
-    }
-
+  window.open(whatsappURL, "_blank");
+}
 
     /*
       INITIAL CART UPDATE
