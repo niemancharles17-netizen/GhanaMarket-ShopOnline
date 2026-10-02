@@ -825,11 +825,158 @@
     /*
       CHECKOUT
     */
-   function checkout() {
+ function checkout() {
   if (cart.length === 0) {
     alert("Your cart is empty. Please add a product first.");
     return;
   }
+
+  let total = 0;
+  let orderDetails = "";
+
+  cart.forEach(function(item) {
+    total += item.price * item.quantity;
+    orderDetails += item.name + " x " + item.quantity + " = GH₵ " +
+      (item.price * item.quantity) + "\n";
+  });
+
+  const checkoutBox = document.createElement("div");
+
+  checkoutBox.style.position = "fixed";
+  checkoutBox.style.top = "0";
+  checkoutBox.style.left = "0";
+  checkoutBox.style.width = "100%";
+  checkoutBox.style.height = "100%";
+  checkoutBox.style.background = "rgba(0,0,0,0.65)";
+  checkoutBox.style.display = "flex";
+  checkoutBox.style.alignItems = "center";
+  checkoutBox.style.justifyContent = "center";
+  checkoutBox.style.zIndex = "9999";
+  checkoutBox.style.padding = "20px";
+
+  checkoutBox.innerHTML = `
+    <div style="
+      background:white;
+      width:100%;
+      max-width:500px;
+      max-height:90vh;
+      overflow-y:auto;
+      border-radius:18px;
+      padding:25px;
+      box-shadow:0 10px 40px rgba(0,0,0,0.3);
+    ">
+
+      <h2 style="margin-bottom:8px;">🛒 GhanaMarket Checkout</h2>
+
+      <p style="color:#666;margin-bottom:20px;">
+        Enter your delivery details below.
+      </p>
+
+      <h3>Order Summary</h3>
+
+      <p style="
+        background:#f5f5f5;
+        padding:15px;
+        border-radius:10px;
+        white-space:pre-line;
+      ">${orderDetails}</p>
+
+      <h3 style="margin:15px 0;">
+        Total: GH₵ ${total}
+      </h3>
+
+      <input id="customerName"
+        placeholder="Full Name"
+        style="width:100%;padding:14px;margin:7px 0;border:1px solid #ccc;border-radius:8px;">
+
+      <input id="customerPhone"
+        placeholder="Phone Number"
+        type="tel"
+        style="width:100%;padding:14px;margin:7px 0;border:1px solid #ccc;border-radius:8px;">
+
+      <textarea id="customerAddress"
+        placeholder="Delivery Address"
+        rows="3"
+        style="width:100%;padding:14px;margin:7px 0;border:1px solid #ccc;border-radius:8px;"></textarea>
+
+      <select id="paymentMethod"
+        style="width:100%;padding:14px;margin:7px 0;border:1px solid #ccc;border-radius:8px;">
+        <option value="">Select Payment Method</option>
+        <option>Cash on Delivery</option>
+        <option>Mobile Money</option>
+        <option>Bank Transfer</option>
+      </select>
+
+      <button id="placeOrderButton"
+        style="
+          width:100%;
+          padding:15px;
+          margin-top:15px;
+          background:#00843d;
+          color:white;
+          border:none;
+          border-radius:10px;
+          font-size:17px;
+          font-weight:bold;
+          cursor:pointer;
+        ">
+        Place Order
+      </button>
+
+      <button id="closeCheckoutButton"
+        style="
+          width:100%;
+          padding:12px;
+          margin-top:10px;
+          background:#eee;
+          color:#333;
+          border:none;
+          border-radius:10px;
+          cursor:pointer;
+        ">
+        Cancel
+      </button>
+
+    </div>
+  `;
+
+  document.body.appendChild(checkoutBox);
+
+  document.getElementById("closeCheckoutButton").onclick = function() {
+    checkoutBox.remove();
+  };
+
+  document.getElementById("placeOrderButton").onclick = function() {
+
+    const name = document.getElementById("customerName").value.trim();
+    const phone = document.getElementById("customerPhone").value.trim();
+    const address = document.getElementById("customerAddress").value.trim();
+    const payment = document.getElementById("paymentMethod").value;
+
+    if (!name || !phone || !address || !payment) {
+      alert("Please complete all checkout details.");
+      return;
+    }
+
+    const message =
+      "🛒 *GhanaMarket Order*\n\n" +
+      "Customer: " + name + "\n" +
+      "Phone: " + phone + "\n" +
+      "Address: " + address + "\n" +
+      "Payment: " + payment + "\n\n" +
+      "Order:\n" + orderDetails +
+      "\nTotal: GH₵ " + total;
+
+    const whatsappNumber = "233599781458";
+    const whatsappURL =
+      "https://wa.me/" + whatsappNumber +
+      "?text=" + encodeURIComponent(message);
+
+    window.open(whatsappURL, "_blank");
+
+    checkoutBox.remove();
+  };
+}
 
   let total = 0;
   let orderDetails = "";
