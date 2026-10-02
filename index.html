@@ -741,24 +741,23 @@
     */
     function toggleCart() {
 
-      const cartBox =
-        document.getElementById("cart");
+  const cartBox = document.getElementById("cart");
 
+  if (cartBox.style.display === "none" || cartBox.style.display === "") {
+    cartBox.style.display = "block";
 
-      if (
-        cartBox.style.display === "none" ||
-        cartBox.style.display === ""
-      ) {
+    cartBox.scrollIntoView({
+      behavior: "smooth",
+      block: "start"
+    });
 
-        cartBox.style.display = "block";
+  } else {
 
-      } else {
+    cartBox.style.display = "none";
 
-        cartBox.style.display = "none";
+  }
 
-      }
-
-    }
+}
 
 
     /*
