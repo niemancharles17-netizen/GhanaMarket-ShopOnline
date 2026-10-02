@@ -865,14 +865,17 @@
     return;
   }
 
-  const message =
-    "Hello GhanaMarket! I want to place an order.\n\n" +
-    "Customer: " + customerName + "\n" +
-    "Phone: " + phone + "\n" +
-    "Delivery location: " + location + "\n\n" +
-    "ORDER:\n" +
-    orderDetails +
-    "\nTotal: GH₵ " + total;
+ const message =
+  "🛍️ GHANAMARKET ORDER\n" +
+  "━━━━━━━━━━━━━━━━━━\n\n" +
+  "👤 Customer: " + customerName + "\n" +
+  "📞 Phone: " + phone + "\n" +
+  "📍 Delivery: " + location + "\n\n" +
+  "🛒 ORDER DETAILS\n" +
+  "━━━━━━━━━━━━━━━━━━\n" +
+  orderDetails +
+  "\n💰 TOTAL: GH₵ " + total + "\n\n" +
+  "Thank you for shopping with GhanaMarket! 🙏";
 
   const whatsappURL =
     "https://wa.me/233599781458?text=" +
