@@ -825,7 +825,7 @@
     /*
       CHECKOUT
     */
-   function checkout() {
+function checkout() {
   if (cart.length === 0) {
     alert("Your cart is empty. Please add a product first.");
     return;
@@ -846,41 +846,142 @@
       "\n";
   });
 
-  const customerName = prompt("Please enter your name:");
+  const checkoutBox = document.createElement("div");
 
-  if (!customerName) {
-    return;
-  }
+  checkoutBox.style.position = "fixed";
+  checkoutBox.style.top = "0";
+  checkoutBox.style.left = "0";
+  checkoutBox.style.width = "100%";
+  checkoutBox.style.height = "100%";
+  checkoutBox.style.background = "rgba(0,0,0,0.6)";
+  checkoutBox.style.display = "flex";
+  checkoutBox.style.alignItems = "center";
+  checkoutBox.style.justifyContent = "center";
+  checkoutBox.style.zIndex = "9999";
+  checkoutBox.style.padding = "20px";
 
-  const phone = prompt("Please enter your phone number:");
+  checkoutBox.innerHTML = `
+    <div style="
+      background:white;
+      width:100%;
+      max-width:500px;
+      max-height:90vh;
+      overflow-y:auto;
+      border-radius:15px;
+      padding:25px;
+      box-shadow:0 10px 30px rgba(0,0,0,0.3);
+    ">
 
-  if (!phone) {
-    return;
-  }
+      <h2 style="margin-bottom:8px;">🛒 GhanaMarket Checkout</h2>
 
-  const location = prompt("Please enter your delivery location:");
+      <p style="color:#666; margin-bottom:20px;">
+        Please enter your delivery details.
+      </p>
 
-  if (!location) {
-    return;
-  }
+      <label>Full Name</label>
+      <input id="checkoutName" type="text"
+        placeholder="Enter your full name"
+        style="width:100%; padding:13px; margin:7px 0 15px; border:1px solid #ccc; border-radius:8px;">
 
- const message =
-  "🛍️ GHANAMARKET ORDER\n" +
-  "━━━━━━━━━━━━━━━━━━\n\n" +
-  "👤 Customer: " + customerName + "\n" +
-  "📞 Phone: " + phone + "\n" +
-  "📍 Delivery: " + location + "\n\n" +
-  "🛒 ORDER DETAILS\n" +
-  "━━━━━━━━━━━━━━━━━━\n" +
-  orderDetails +
-  "\n💰 TOTAL: GH₵ " + total + "\n\n" +
-  "Thank you for shopping with GhanaMarket! 🙏";
+      <label>Phone Number</label>
+      <input id="checkoutPhone" type="tel"
+        placeholder="Enter your phone number"
+        style="width:100%; padding:13px; margin:7px 0 15px; border:1px solid #ccc; border-radius:8px;">
 
-  const whatsappURL =
-    "https://wa.me/233599781458?text=" +
-    encodeURIComponent(message);
+      <label>Delivery Location</label>
+      <textarea id="checkoutLocation"
+        placeholder="Enter your delivery address or location"
+        rows="3"
+        style="width:100%; padding:13px; margin:7px 0 15px; border:1px solid #ccc; border-radius:8px; resize:none;"></textarea>
 
-  window.location.href = whatsappURL;
+      <div style="
+        background:#f5f5f5;
+        padding:15px;
+        border-radius:10px;
+        margin:15px 0;
+      ">
+        <h3>Order Summary</h3>
+
+        <p style="white-space:pre-line; margin-top:10px;">
+          ${orderDetails}
+        </p>
+
+        <hr style="margin:12px 0;">
+
+        <strong style="font-size:18px;">
+          Total: GH₵ ${total}
+        </strong>
+      </div>
+
+      <button id="placeOrderBtn"
+        style="
+          width:100%;
+          padding:14px;
+          border:none;
+          border-radius:8px;
+          background:#25D366;
+          color:white;
+          font-size:16px;
+          font-weight:bold;
+          cursor:pointer;
+        ">
+        📱 Place Order on WhatsApp
+      </button>
+
+      <button id="cancelCheckoutBtn"
+        style="
+          width:100%;
+          padding:12px;
+          margin-top:10px;
+          border:1px solid #ccc;
+          border-radius:8px;
+          background:white;
+          cursor:pointer;
+        ">
+        Cancel
+      </button>
+
+    </div>
+  `;
+
+  document.body.appendChild(checkoutBox);
+
+  document.getElementById("cancelCheckoutBtn").onclick = function() {
+    checkoutBox.remove();
+  };
+
+  document.getElementById("placeOrderBtn").onclick = function() {
+    const customerName =
+      document.getElementById("checkoutName").value.trim();
+
+    const phone =
+      document.getElementById("checkoutPhone").value.trim();
+
+    const location =
+      document.getElementById("checkoutLocation").value.trim();
+
+    if (!customerName || !phone || !location) {
+      alert("Please complete all delivery details.");
+      return;
+    }
+
+    const message =
+      "🛍️ GHANAMARKET ORDER\n\n" +
+      "👤 Customer: " + customerName + "\n" +
+      "📞 Phone: " + phone + "\n" +
+      "📍 Delivery: " + location + "\n\n" +
+      "🧾 ORDER DETAILS\n" +
+      "--------------------\n" +
+      orderDetails +
+      "\n💰 TOTAL: GH₵ " + total +
+      "\n\nThank you for shopping with GhanaMarket! 🙏";
+
+    const whatsappURL =
+      "https://wa.me/233599781458?text=" +
+      encodeURIComponent(message);
+
+    window.location.href = whatsappURL;
+  };
 }
 
     /*
