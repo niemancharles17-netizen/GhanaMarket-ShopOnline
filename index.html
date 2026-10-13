@@ -961,7 +961,7 @@ function checkout() {
       document.getElementById("checkoutLocation").value.trim();
 
     if (!customerName || !phone || !location) {
-      alert("Please complete all delivery details.");
+showNotice("Please complete all delivery details.");
       return;
     }
 
@@ -985,9 +985,73 @@ function checkout() {
 }
 
     /*
-      INITIAL CART UPDATE
-    */
-    updateCart();
+/*
+  MODERN GHANAMARKET NOTIFICATION
+*/
+function showNotice(message) {
+  const notice = document.createElement("div");
+
+  notice.style.position = "fixed";
+  notice.style.top = "25px";
+  notice.style.left = "50%";
+  notice.style.transform = "translateX(-50%)";
+  notice.style.width = "90%";
+  notice.style.maxWidth = "420px";
+  notice.style.background = "#ffffff";
+  notice.style.color = "#222222";
+  notice.style.padding = "20px";
+  notice.style.borderRadius = "14px";
+  notice.style.boxShadow = "0 8px 30px rgba(0,0,0,0.2)";
+  notice.style.borderLeft = "6px solid #00843d";
+  notice.style.zIndex = "10000";
+  notice.style.fontFamily = "Arial, sans-serif";
+  notice.style.display = "flex";
+  notice.style.alignItems = "center";
+  notice.style.gap = "12px";
+
+  notice.innerHTML = `
+    <div style="
+      width:36px;
+      height:36px;
+      min-width:36px;
+      border-radius:50%;
+      background:#e6f5ec;
+      color:#00843d;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-size:22px;
+      font-weight:bold;
+    ">!</div>
+
+    <div style="flex:1;">
+      <strong style="display:block; margin-bottom:5px; color:#00843d;">
+        GhanaMarket
+      </strong>
+      <span></span>
+    </div>
+
+    <button type="button" aria-label="Close notification" style="
+      border:none;
+      background:transparent;
+      color:#777;
+      font-size:22px;
+      cursor:pointer;
+    ">&times;</button>
+  `;
+
+  notice.querySelector("span").textContent = message;
+
+  notice.querySelector("button").onclick = function() {
+    notice.remove();
+  };
+
+  document.body.appendChild(notice);
+
+  setTimeout(function() {
+    notice.remove();
+  }, 4000);
+}
 
   </script>
 
