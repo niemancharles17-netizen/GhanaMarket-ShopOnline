@@ -334,6 +334,21 @@
     </div>
   </header>
 
+<!-- SELLER ACCOUNT SECTION -->
+<section id="sellerAuth" style="max-width:500px; margin:30px auto; padding:20px; background:white; border-radius:10px;">
+    <h2>Seller Account</h2>
+    <p>Create an account or log in to sell on GhanaMarket.</p>
+
+    <input type="email" id="sellerEmail" placeholder="Email address" style="width:100%; padding:12px; margin:8px 0;">
+
+    <input type="password" id="sellerPassword" placeholder="Password" style="width:100%; padding:12px; margin:8px 0;">
+
+    <button type="button" onclick="sellerSignUp()">Create Account</button>
+
+    <button type="button" onclick="sellerLogin()">Log In</button>
+
+    <p id="sellerAuthMessage"></p>
+</section>
 
   <!-- MAIN CONTENT -->
   <div class="container">
@@ -834,7 +849,55 @@ async function loadProducts() {
 
     searchProducts();
 }
+// SELLER REGISTRATION
+async function sellerSignUp() {
+    const email = document.getElementById("sellerEmail").value.trim();
+    const password = document.getElementById("sellerPassword").value;
+    const message = document.getElementById("sellerAuthMessage");
 
+    if (!email || !password) {
+        message.textContent = "Enter your email and password.";
+        return;
+    }
+
+    if (password.length < 6) {
+        message.textContent = "Password must be at least 6 characters.";
+        return;
+    }
+
+    const { data, error } = await supabaseClient.auth.signUp({
+        email: email,
+        password: password
+    });
+
+    if (error) {
+        message.textContent = error.message;
+        return;
+    }
+
+    message.textContent = data.session
+        ? "Account created successfully!"
+        : "Account created! Check your email to confirm your account.";
+}
+
+// SELLER LOGIN
+async function sellerLogin() {
+    const email = document.getElementById("sellerEmail").value.trim();
+    const password = document.getElementById("sellerPassword").value;
+    const message = document.getElementById("sellerAuthMessage");
+
+    const { error } = await supabaseClient.auth.signInWithPassword({
+        email: email,
+        password: password
+    });
+
+    if (error) {
+        message.textContent = error.message;
+        return;
+    }
+
+    message.textContent = "Login successful!";
+}
 loadProducts();
   function searchProducts() {
 
