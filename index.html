@@ -770,7 +770,73 @@ let cart = [];
     /*
       SEARCH PRODUCTS
     */
-    function searchProducts() {
+  // LOAD APPROVED PRODUCTS FROM SUPABASE
+async function loadProducts() {
+    const container = document.getElementById("products");
+
+    const { data, error } = await supabaseClient
+        .from("products")
+        .select("*")
+        .eq("status", "approved")
+        .order("created_at", { ascending: false });
+
+    if (error) {
+        console.error("Product loading error:", error);
+        return;
+    }
+
+    if (!data || data.length === 0) {
+        return;
+    }
+
+    container.innerHTML = "";
+
+    data.forEach(function(product) {
+        const card = document.createElement("div");
+        card.className = "product";
+        card.dataset.name = product.name;
+
+        const image = document.createElement("img");
+        image.src = product.image_url || "";
+        image.alt = product.name;
+
+        const info = document.createElement("div");
+        info.className = "product-info";
+
+        const title = document.createElement("h3");
+        title.textContent = product.name;
+
+        const description = document.createElement("p");
+        description.textContent = product.description || "";
+
+        const price = document.createElement("div");
+        price.className = "price";
+        price.textContent = "GH₵ " + Number(product.price || 0);
+
+        const button = document.createElement("button");
+        button.className = "add-btn";
+        button.textContent = "Add to Cart";
+
+        button.onclick = function() {
+            addToCart(product.name, Number(product.price || 0));
+        };
+
+        info.appendChild(title);
+        info.appendChild(description);
+        info.appendChild(price);
+        info.appendChild(button);
+
+        card.appendChild(image);
+        card.appendChild(info);
+
+        container.appendChild(card);
+    });
+
+    searchProducts();
+}
+
+loadProducts();
+  function searchProducts() {
 
       const search =
         document
