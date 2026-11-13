@@ -364,8 +364,7 @@
     <textarea id="productDescription" placeholder="Product description" style="width:100%; padding:12px; margin:8px 0;"></textarea>
 
     <input type="number" id="productPrice" placeholder="Price in GH₵" min="0.01" step="0.01" style="width:100%; padding:12px; margin:8px 0;">
-
-    <input type="url" id="productImage" placeholder="Product image URL" style="width:100%; padding:12px; margin:8px 0;">
+<input type="file" id="productImage" accept="image/*">
 
     <button type="button" onclick="addProduct()">Submit Product</button>
 
@@ -947,9 +946,8 @@ async function addProduct() {
     const name = document.getElementById("productName").value.trim();
     const description = document.getElementById("productDescription").value.trim();
     const price = Number(document.getElementById("productPrice").value);
-    const image_url = document.getElementById("productImage").value.trim();
-
-    if (!name || !description || !price || price <= 0 || !image_url) {
+    const imageFile = document.getElementById("productImage").files[0];
+    if (!name || !description || !price || price <= 0 || !imageFile) {
         message.textContent = "Please complete all product fields.";
         return;
     }
@@ -962,7 +960,26 @@ async function addProduct() {
         return;
     }
 
-    const { error } = await supabaseClient
+   // UPLOAD PRODUCT IMAGE
+const filePath = `${user.id}/${Date.now()}-${imageFile.name}`;
+
+const { error: uploadError } = await supabaseClient
+    .storage
+    .from("product-images")
+    .upload(filePath, imageFile);
+
+if (uploadError) {
+    message.textContent = uploadError.message;
+    return;
+}
+
+const { data: imageData } = supabaseClient
+    .storage
+    .from("product-images")
+    .getPublicUrl(filePath);
+
+const image_url = imageData.publicUrl; 
+const { error } = await supabaseClient
         .from("products")
         .insert([{
             name: name,
