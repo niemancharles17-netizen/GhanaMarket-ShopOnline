@@ -919,7 +919,20 @@ async function sellerLogin() {
     }
 
     message.textContent = "Login successful!";
-document.getElementById("sellerDashboard").style.display = "block";
+const { data: isAdmin, error: adminCheckError } = await supabaseClient.rpc("is_admin");
+
+if (adminCheckError) {
+    message.textContent = "Unable to verify account permissions.";
+    return;
+}
+
+if (isAdmin) {
+    document.getElementById("adminDashboard").style.display = "block";
+loadAdminProducts();
+} else {
+    document.getElementById("sellerDashboard").style.display = "block";
+}
+
 document.getElementById("sellerAuth").style.display = "none";
 }
 // SELLER PRODUCT SUBMISSION
@@ -1292,8 +1305,154 @@ function showNotice(message) {
     notice.remove();
   }, 4000);
 }
+// GHANAMARKET ADMIN FUNCTIONS
 
+async function loadAdminProducts() {
+    const list = document.getElementById("adminProductList");
+    list.textContent = "Loading products...";
+
+    const { data, error } = await supabaseClient
+        .from("products")
+        .select("id, name, description, price, image_url, status");
+
+    if (error) {
+        list.textContent = "Error loading products: " + error.message;
+        return;
+    }
+
+    document.getElementById("adminTotalProducts").textContent = data.length;
+
+    document.getElementById("adminPendingProducts").textContent =
+        data.filter(p => p.status === "pending").length;
+
+    document.getElementById("adminApprovedProducts").textContent =
+        data.filter(p => p.status === "approved").length;
+
+    list.innerHTML = "";
+
+    data.forEach(product => {
+        const card = document.createElement("div");
+        card.style.cssText =
+            "padding:15px;margin:15px 0;border:1px solid #ddd;border-radius:10px;";
+
+        const title = document.createElement("h3");
+        title.textContent = product.name;
+
+        const description = document.createElement("p");
+        description.textContent = product.description;
+
+        const price = document.createElement("p");
+        price.textContent = "GH₵ " + product.price;
+
+        const status = document.createElement("p");
+        status.textContent = "Status: " + product.status;
+
+        card.append(title, description, price, status);
+if (product.status === "pending") {
+    const approveBtn = document.createElement("button");
+    approveBtn.textContent = "✓ Approve";
+    approveBtn.style.cssText = "background:#00843d;color:white;padding:10px 15px;border:0;border-radius:6px;margin:5px;";
+
+    approveBtn.onclick = () => approveProduct(product.id);
+
+    const rejectBtn = document.createElement("button");
+    rejectBtn.textContent = "✕ Reject";
+    rejectBtn.style.cssText = "background:#cc0000;color:white;padding:10px 15px;border:0;border-radius:6px;margin:5px;";
+
+    rejectBtn.onclick = () => rejectProduct(product.id);
+
+    card.append(approveBtn, rejectBtn);
+}
+
+        if (product.image_url) {
+            const image = document.createElement("img");
+            image.src = product.image_url;
+            image.alt = product.name;
+            image.style.cssText = "width:120px;border-radius:8px;";
+            card.appendChild(image);
+        }
+
+        list.appendChild(card);
+    });
+}
+
+// APPROVE PRODUCT
+async function approveProduct(productId) {
+    const { error } = await supabaseClient
+        .from("products")
+        .update({ status: "approved" })
+        .eq("id", productId);
+
+    if (error) {
+        alert("Approval failed: " + error.message);
+        return;
+    }
+
+    alert("Product approved successfully!");
+    loadAdminProducts();
+}
+
+// REJECT PRODUCT
+async function rejectProduct(productId) {
+    const confirmed = confirm("Are you sure you want to reject this product?");
+
+    if (!confirmed) return;
+
+    const { error } = await supabaseClient
+        .from("products")
+        .update({ status: "rejected" })
+        .eq("id", productId);
+
+    if (error) {
+        alert("Rejection failed: " + error.message);
+        return;
+    }
+
+    alert("Product rejected successfully!");
+    loadAdminProducts();
+}
+async function adminLogout() {
+    await supabaseClient.auth.signOut();
+    location.reload();
+}
   </script>
 
+<!-- GHANAMARKET ADMIN DASHBOARD -->
+<section id="adminDashboard" style="display:none; max-width:1200px; margin:30px auto; padding:25px; background:#fff; border-radius:12px; box-shadow:0 4px 15px rgba(0,0,0,0.08);">
+
+    <h2 style="color:#00843d; font-size:28px;">🇬🇭 GhanaMarket Admin</h2>
+
+    <p style="color:#666;">Manage your marketplace and review seller submissions.</p>
+
+    <div style="display:flex; gap:15px; flex-wrap:wrap; margin:25px 0;">
+
+        <div style="flex:1; min-width:180px; padding:20px; background:#e8f5ec; border-radius:10px;">
+            <h3>Total Products</h3>
+            <p id="adminTotalProducts" style="font-size:28px; font-weight:bold;">0</p>
+        </div>
+
+        <div style="flex:1; min-width:180px; padding:20px; background:#fff5d6; border-radius:10px;">
+            <h3>Pending Approval</h3>
+            <p id="adminPendingProducts" style="font-size:28px; font-weight:bold;">0</p>
+        </div>
+
+        <div style="flex:1; min-width:180px; padding:20px; background:#e8f0ff; border-radius:10px;">
+            <h3>Approved Products</h3>
+            <p id="adminApprovedProducts" style="font-size:28px; font-weight:bold;">0</p>
+        </div>
+
+    </div>
+
+    <h3 style="margin-top:30px;">📦 Product Submissions</h3>
+
+    <div id="adminProductList">
+        Loading products...
+    </div>
+
+    <button type="button" onclick="adminLogout()" style="background:#cc0000; color:white; padding:12px 20px; border:none; border-radius:6px; margin-top:25px;">
+        Log Out
+    </button>
+
+</section>
 </body>
 </html>
