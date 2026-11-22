@@ -571,6 +571,27 @@ const supabaseClient = window.supabase.createClient(
     SUPABASE_URL,
     SUPABASE_PUBLISHABLE_KEY
 ); 
+// DETECT PASSWORD RECOVERY
+supabaseClient.auth.onAuthStateChange((event, session) => {
+    if (event === "PASSWORD_RECOVERY") {
+        document.getElementById("passwordResetSection").style.display = "block";
+
+        const sellerAuth = document.getElementById("sellerAuth");
+        if (sellerAuth) {
+            sellerAuth.style.display = "none";
+        }
+
+        const sellerDashboard = document.getElementById("sellerDashboard");
+        if (sellerDashboard) {
+            sellerDashboard.style.display = "none";
+        }
+
+        const adminDashboard = document.getElementById("adminDashboard");
+        if (adminDashboard) {
+            adminDashboard.style.display = "none";
+        }
+    }
+});
 let cart = [];
 
 
@@ -1411,6 +1432,27 @@ async function rejectProduct(productId) {
     alert("Product rejected successfully!");
     loadAdminProducts();
 }
+// UPDATE GHANAMARKET ACCOUNT PASSWORD
+async function updateMyPassword() {
+    const newPassword = document.getElementById("newPassword").value;
+    const message = document.getElementById("passwordResetMessage");
+
+    if (newPassword.length < 8) {
+        message.textContent = "Password must be at least 8 characters.";
+        return;
+    }
+
+    const { error } = await supabaseClient.auth.updateUser({
+        password: newPassword
+    });
+
+    if (error) {
+        message.textContent = "Password update failed: " + error.message;
+        return;
+    }
+
+    message.textContent = "Your password has been updated successfully!";
+}
 async function adminLogout() {
     await supabaseClient.auth.signOut();
     location.reload();
@@ -1452,6 +1494,29 @@ async function adminLogout() {
     <button type="button" onclick="adminLogout()" style="background:#cc0000; color:white; padding:12px 20px; border:none; border-radius:6px; margin-top:25px;">
         Log Out
     </button>
+
+</section>
+<!-- GHANAMARKET PASSWORD RESET -->
+<section id="passwordResetSection" style="display:none; max-width:450px; margin:50px auto; padding:25px; background:white; border-radius:12px; box-shadow:0 4px 15px rgba(0,0,0,0.1);">
+
+    <h2 style="color:#00843d;">Reset Your Password</h2>
+
+    <p>Enter your new password below.</p>
+
+    <input
+        type="password"
+        id="newPassword"
+        placeholder="Enter new password"
+        style="width:100%; padding:12px; margin:10px 0; box-sizing:border-box;"
+    >
+
+    <button
+        onclick="updateMyPassword()"
+        style="background:#00843d; color:white; padding:12px 20px; border:0; border-radius:6px;">
+        Update Password
+    </button>
+
+    <p id="passwordResetMessage"></p>
 
 </section>
 </body>
