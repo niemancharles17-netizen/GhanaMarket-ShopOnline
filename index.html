@@ -1432,6 +1432,22 @@ async function rejectProduct(productId) {
     alert("Product rejected successfully!");
     loadAdminProducts();
 }
+// SEND PASSWORD RESET EMAIL
+async function sendResetEmail() {
+    const email = document.getElementById("sellerEmail").value.trim();
+    const message = document.getElementById("sellerAuthMessage");
+
+    if (!email) {
+        message.textContent = "Type your email above first.";
+        return;
+    }
+
+    await supabaseClient.auth.resetPasswordForEmail(email, {
+        redirectTo: window.location.origin + window.location.pathname
+    });
+
+    message.textContent = "If that email has an account, a reset link has been sent.";
+}
 // UPDATE GHANAMARKET ACCOUNT PASSWORD
 async function updateMyPassword() {
     const newPassword = document.getElementById("newPassword").value;
