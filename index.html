@@ -703,7 +703,7 @@ let cart = [];
           <div class="cart-item-info">
 
             <div class="cart-item-name">
-              ${item.name}
+              ${escapeHTML(item.name)}
             </div>
 
             <div class="cart-item-price">
@@ -1177,7 +1177,7 @@ function checkout() {
         <h3>Order Summary</h3>
 
         <p style="white-space:pre-line; margin-top:10px;">
-          ${orderDetails}
+          ${escapeHTML(orderDetails)}
         </p>
 
         <hr style="margin:12px 0;">
@@ -1431,6 +1431,12 @@ async function rejectProduct(productId) {
 
     alert("Product rejected successfully!");
     loadAdminProducts();
+}
+// MAKE TEXT SAFE BEFORE SHOWING IT ON THE PAGE
+function escapeHTML(text) {
+    const d = document.createElement("div");
+    d.textContent = text;
+    return d.innerHTML;
 }
 // SEND PASSWORD RESET EMAIL
 async function sendResetEmail() {
